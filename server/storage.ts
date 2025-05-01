@@ -9,7 +9,7 @@ import {
   screenTimeLogs,
   userSettings
 } from "@shared/schema";
-import { eq, and, desc, gte, lte, sql, in as inArray } from "drizzle-orm";
+import { eq, and, desc, gte, lte, sql } from "drizzle-orm";
 import { getDayName } from "@/lib/utils";
 
 // User methods
@@ -507,9 +507,8 @@ export const storage = {
   async getProgressData(userId: number, startDate: Date, endDate: Date) {
     // Get all habits for this user
     const userHabits = await this.getHabitsByUser(userId);
-    const habitIds = userHabits.map(h => h.id);
     
-    if (habitIds.length === 0) {
+    if (userHabits.length === 0) {
       return [];
     }
     
@@ -517,21 +516,29 @@ export const storage = {
     const startFormatted = startDate.toISOString().split('T')[0];
     const endFormatted = endDate.toISOString().split('T')[0];
     
-    // Get logs for date range across all habits
-    const logs = await db.select({
-      date: habitLogs.date,
-      completed: habitLogs.completed
-    })
-    .from(habitLogs)
-    .where(
-      sql`${habitLogs.habitId} IN (${habitIds.join(',')}) AND 
-         DATE(${habitLogs.date}) >= ${startFormatted} AND 
-         DATE(${habitLogs.date}) <= ${endFormatted}`
-    );
+    // Execute a query for each habit ID individually and combine results
+    const allLogs = [];
+    
+    for (const habit of userHabits) {
+      const logs = await db.select({
+        date: habitLogs.date,
+        completed: habitLogs.completed
+      })
+      .from(habitLogs)
+      .where(
+        and(
+          eq(habitLogs.habitId, habit.id),
+          gte(sql`DATE(${habitLogs.date})`, startFormatted),
+          lte(sql`DATE(${habitLogs.date})`, endFormatted)
+        )
+      );
+      
+      allLogs.push(...logs);
+    }
     
     // Group by date and calculate completion rate
     const dateMap = new Map();
-    logs.forEach(log => {
+    allLogs.forEach(log => {
       const dateStr = new Date(log.date).toISOString().split('T')[0];
       if (!dateMap.has(dateStr)) {
         dateMap.set(dateStr, { total: 0, completed: 0 });
