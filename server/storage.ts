@@ -9,7 +9,7 @@ import {
   screenTimeLogs,
   userSettings
 } from "@shared/schema";
-import { eq, and, desc, gte, lte, sql } from "drizzle-orm";
+import { eq, and, desc, gte, lte, sql, in as inArray } from "drizzle-orm";
 import { getDayName } from "@/lib/utils";
 
 // User methods
@@ -239,8 +239,8 @@ export const storage = {
       iconColor: habits.iconColor,
       goal: sql<string>`${habits.goalValue} || ' ' || ${habits.goalUnit} || ' ' || 
         CASE 
-          WHEN json_extract(${habits.frequency}, '$.type') = 'daily' THEN 'daily'
-          WHEN json_extract(${habits.frequency}, '$.type') = 'weekly' THEN 'weekly'
+          WHEN (${habits.frequency}->>'type') = 'daily' THEN 'daily'
+          WHEN (${habits.frequency}->>'type') = 'weekly' THEN 'weekly'
           ELSE ''
         END`
     })
@@ -524,11 +524,9 @@ export const storage = {
     })
     .from(habitLogs)
     .where(
-      and(
-        sql`${habitLogs.habitId} IN (${habitIds.join(',')})`,
-        gte(sql`DATE(${habitLogs.date})`, startFormatted),
-        lte(sql`DATE(${habitLogs.date})`, endFormatted)
-      )
+      sql`${habitLogs.habitId} IN (${habitIds.join(',')}) AND 
+         DATE(${habitLogs.date}) >= ${startFormatted} AND 
+         DATE(${habitLogs.date}) <= ${endFormatted}`
     );
     
     // Group by date and calculate completion rate
