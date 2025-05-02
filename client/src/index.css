@@ -136,11 +136,109 @@
   .fade-in {
     animation-name: fadeIn;
   }
+
+  .slide-in-bottom {
+    animation-name: slideInBottom;
+  }
+
+  .slide-in-top {
+    animation-name: slideInTop;
+  }
+
+  .slide-in-left {
+    animation-name: slideInLeft;
+  }
+
+  .slide-in-right {
+    animation-name: slideInRight;
+  }
+
+  .scale-in {
+    animation-name: scaleIn;
+  }
+
+  .bounce-in {
+    animation-name: bounceIn;
+  }
   
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
   }
+
+  @keyframes slideInBottom {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes slideInTop {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  @keyframes slideInLeft {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes slideInRight {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes scaleIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  @keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    40% { transform: scale(1.1); }
+    80% { transform: scale(0.9); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+}
+
+/* Theme transition animation */
+.theme-transition {
+  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out, border-color 0.5s ease-in-out;
+}
+
+/* Fullscreen theme toggle animation */
+.theme-icon-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.theme-icon-overlay.active {
+  opacity: 1;
+}
+
+.theme-icon-container {
+  transform: scale(0);
+  transition: transform 0.5s ease-in-out;
+}
+
+.theme-icon-container.active {
+  transform: scale(20);
+  animation: pulse 1s ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(25); }
+  100% { transform: scale(50); opacity: 0; }
 }
 
 /* Custom styles */

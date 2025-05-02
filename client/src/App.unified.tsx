@@ -83,6 +83,8 @@ type Theme = "light" | "dark";
 type ThemeContextType = {
   theme: Theme;
   toggleTheme: () => void;
+  animationActive?: boolean;
+  iconType?: "sun" | "moon";
 };
 
 const ThemeContext = createContext<ThemeContextType>({ 
@@ -92,6 +94,8 @@ const ThemeContext = createContext<ThemeContextType>({
 
 const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useState<Theme>("light");
+  const [animationActive, setAnimationActive] = useState(false);
+  const [iconType, setIconType] = useState<"sun" | "moon">("moon");
 
   useEffect(() => {
     // Check if user has a theme preference in localStorage
@@ -108,19 +112,43 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
     // Update the class on the document element when theme changes
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
+      document.documentElement.classList.add("theme-transition");
     } else {
       document.documentElement.classList.remove("dark");
+      document.documentElement.classList.add("theme-transition");
     }
     // Save to localStorage
     localStorage.setItem("habitify-theme", theme);
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme(prev => prev === "light" ? "dark" : "light");
+    setIconType(theme === "light" ? "moon" : "sun");
+    setAnimationActive(true);
+    
+    // Delayed theme change to allow for animation
+    setTimeout(() => {
+      setTheme(prev => prev === "light" ? "dark" : "light");
+      
+      // Reset animation after it's done
+      setTimeout(() => {
+        setAnimationActive(false);
+      }, 1000);
+    }, 300);
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, animationActive, iconType }}>
+      {animationActive && (
+        <div className={`theme-icon-overlay ${animationActive ? 'active' : ''}`}>
+          <div className={`theme-icon-container ${animationActive ? 'active' : ''}`}>
+            {iconType === "sun" ? (
+              <Sun className="h-8 w-8 text-yellow-400" />
+            ) : (
+              <Moon className="h-8 w-8 text-blue-500" />
+            )}
+          </div>
+        </div>
+      )}
       {children}
     </ThemeContext.Provider>
   );
@@ -349,7 +377,7 @@ const Footer = () => {
   return (
     <footer className="bg-primary dark:bg-gray-900 text-white py-8 mt-12">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div>
             <h5 className="text-lg font-bold mb-4 font-inter">Habitify</h5>
             <p className="text-gray-300 text-sm">Track your habits, improve your health, and reach your goals with our comprehensive wellness platform.</p>
@@ -363,15 +391,7 @@ const Footer = () => {
               <li><Link href="/analytics"><div className="hover:text-white cursor-pointer">Progress Reports</div></Link></li>
             </ul>
           </div>
-          <div>
-            <h5 className="text-md font-semibold mb-4 font-inter">Resources</h5>
-            <ul className="space-y-2 text-sm text-gray-300">
-              <li><a href="#" onClick={(e) => handleLinkClick(e, "Blog")} className="hover:text-white cursor-pointer">Blog</a></li>
-              <li><a href="#" onClick={(e) => handleLinkClick(e, "Guides")} className="hover:text-white cursor-pointer">Guides</a></li>
-              <li><a href="#" onClick={(e) => handleLinkClick(e, "Support")} className="hover:text-white cursor-pointer">Support</a></li>
-              <li><a href="#" onClick={(e) => handleLinkClick(e, "API")} className="hover:text-white cursor-pointer">API</a></li>
-            </ul>
-          </div>
+
           <div>
             <h5 className="text-md font-semibold mb-4 font-inter">Company</h5>
             <ul className="space-y-2 text-sm text-gray-300">
