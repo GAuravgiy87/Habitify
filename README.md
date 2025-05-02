@@ -146,3 +146,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - Icons provided by Lucide React
 - Design inspiration from various health and wellness applications
 - Special thanks to all contributors who have helped make this project better
+"# Habitify" 
