@@ -51,8 +51,9 @@ async function apiRequest(
 type UnauthorizedBehavior = "returnNull" | "throw";
 const getQueryFn = <T,>(options: {
   on401: UnauthorizedBehavior;
-}): QueryFunction<T> =>
-  async ({ queryKey }: { queryKey: string[] }) => {
+}) => 
+  async (context: any) => {    
+    const { queryKey } = context;
     const res = await fetch(queryKey[0] as string, {
       credentials: "include",
     });
@@ -598,12 +599,12 @@ const NotFound = () => {
 
 // Dashboard Page Component
 const Dashboard = () => {
-  const { data: statsData, isLoading: isLoadingStats } = useQuery({
+  const { data: statsData, isLoading: isLoadingStats } = useQuery<{data: any}>({
     queryKey: ["/api/dashboard/stats"],
     refetchOnWindowFocus: false,
   });
   
-  const { data: habitsData, isLoading: isLoadingHabits } = useQuery({
+  const { data: habitsData, isLoading: isLoadingHabits } = useQuery<{data: any}>({
     queryKey: ["/api/habits"],
     refetchOnWindowFocus: false,
   });
@@ -775,7 +776,7 @@ const Dashboard = () => {
               <p className="text-gray-500 dark:text-gray-400">Loading habits...</p>
             </div>
           ) : (
-            habits.map((habit) => (
+            habits.map((habit: any) => (
               <HabitCard key={habit.id} habit={habit} />
             ))
           )}
@@ -1020,16 +1021,19 @@ const Toaster = () => {
 
   return (
     <div className="fixed top-0 z-[100] flex flex-col gap-2 p-4 bottom-0 right-0 items-end justify-end">
-      {toasts.map(({ id, title, description, action, ...props }) => (
-        <Toast
-          key={id}
-          title={title}
-          description={description}
-          action={action}
-          className="w-full max-w-md"
-          {...props}
-        />
-      ))}
+      {toasts.map((toast) => {
+        const { id, title, description, action, ...props } = toast;
+        return (
+          <Toast
+            key={id}
+            title={title}
+            description={description}
+            action={action}
+            className="w-full max-w-md"
+            {...props as any}
+          />
+        );
+      })}
     </div>
   );  
 };
