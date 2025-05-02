@@ -1,6 +1,6 @@
-import { useState, useEffect, createContext, useContext, ReactNode } from "react";
+import React, { useState, useEffect, createContext, useContext, ReactNode } from "react";
 import { Switch, Route, Link, useLocation } from "wouter";
-import { QueryClient, QueryClientProvider, useQuery } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, useQuery, QueryFunction } from "@tanstack/react-query";
 import { formatDate, formatTime, calculatePercentage, getDayName, getDateRange } from "./lib/utils";
 import { useToast } from "./hooks/use-toast";
 import { useMobile } from "./hooks/use-mobile";
@@ -24,10 +24,52 @@ import {
   Github
 } from "lucide-react";
 
+// API request and QueryFn functions
+async function throwIfResNotOk(res: Response) {
+  if (!res.ok) {
+    const text = (await res.text()) || res.statusText;
+    throw new Error(`${res.status}: ${text}`);
+  }
+}
+
+async function apiRequest(
+  method: string,
+  url: string,
+  data?: unknown | undefined,
+): Promise<Response> {
+  const res = await fetch(url, {
+    method,
+    headers: data ? { "Content-Type": "application/json" } : {},
+    body: data ? JSON.stringify(data) : undefined,
+    credentials: "include",
+  });
+
+  await throwIfResNotOk(res);
+  return res;
+}
+
+type UnauthorizedBehavior = "returnNull" | "throw";
+const getQueryFn = <T,>(options: {
+  on401: UnauthorizedBehavior;
+}): QueryFunction<T> =>
+  async ({ queryKey }: { queryKey: string[] }) => {
+    const res = await fetch(queryKey[0] as string, {
+      credentials: "include",
+    });
+
+    if (options.on401 === "returnNull" && res.status === 401) {
+      return null;
+    }
+
+    await throwIfResNotOk(res);
+    return await res.json();
+  };
+
 // Initialize the query client
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
+      queryFn: getQueryFn({ on401: "throw" }),
       refetchOnWindowFocus: false,
       retry: 1,
       staleTime: 5 * 60 * 1000,
@@ -927,27 +969,69 @@ function Router() {
 }
 
 // Toast Component
-interface ToastProps {
-  title?: string;
-  description?: string;
-  action?: ReactNode;
-}
-
-const Toast = ({ title, description, action }: ToastProps) => {
-  return (
-    <div className="fixed bottom-4 right-4 z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-100 dark:border-gray-700 p-4 max-w-md">
-        {title && <h4 className="text-sm font-semibold text-primary dark:text-white mb-1">{title}</h4>}
-        {description && <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>}
-        {action && <div className="mt-2">{action}</div>}
-      </div>
-    </div>
-  );
+type ToastProps = React.HTMLAttributes<HTMLDivElement> & {
+  title?: React.ReactNode;
+  description?: React.ReactNode;
+  action?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 };
 
+const Toast = React.forwardRef<HTMLDivElement, ToastProps>(
+  ({ className, title, description, action, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-md border border-border p-6 pr-8 shadow-lg transition-all data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=open]:slide-in-from-top-full data-[state=closed]:slide-out-to-right-full dark:border-gray-700 bg-white dark:bg-gray-800",
+          className
+        )}
+        {...props}
+      >
+        <div className="grid gap-1">
+          {title && (
+            <div className="text-sm font-semibold text-primary dark:text-white">
+              {title}
+            </div>
+          )}
+          {description && (
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              {description}
+            </div>
+          )}
+        </div>
+        {action}
+      </div>
+    );
+  }
+);
+Toast.displayName = "Toast";
+
 // Toaster Component
+type ToasterProps = React.ComponentPropsWithoutRef<typeof Toast>;
+type ToasterToastProps = ToastProps & {
+  id: string;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+};
+
 const Toaster = () => {
-  return null; // This would normally contain the toast management
+  const { toasts } = useToast();
+
+  return (
+    <div className="fixed top-0 z-[100] flex flex-col gap-2 p-4 bottom-0 right-0 items-end justify-end">
+      {toasts.map(({ id, title, description, action, ...props }) => (
+        <Toast
+          key={id}
+          title={title}
+          description={description}
+          action={action}
+          className="w-full max-w-md"
+          {...props}
+        />
+      ))}
+    </div>
+  );  
 };
 
 // Main App Component
