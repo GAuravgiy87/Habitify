@@ -443,7 +443,7 @@ const StatCard = ({
   iconColor,
 }: StatCardProps) => {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-all duration-300 animate-in slide-in-bottom">
       <div className="flex justify-between">
         <div>
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
@@ -519,7 +519,7 @@ const HabitCard = ({ habit }: HabitCardProps) => {
   };
   
   return (
-    <div className="border-b border-gray-100 dark:border-gray-700 last:border-0 p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+    <div className="border-b border-gray-100 dark:border-gray-700 last:border-0 p-4 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-300 hover:translate-x-1 animate-in slide-in-right duration-300">
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <div className={`${habit.iconBgColor} p-2 rounded-full w-10 h-10 flex items-center justify-center`}>
@@ -593,7 +593,7 @@ interface ChartPlaceholderProps {
 
 const ChartPlaceholder = ({ title, height = "h-64" }: ChartPlaceholderProps) => {
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-6 ${height}`}>
+    <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-6 ${height} hover:shadow-md transition-all duration-300 animate-in scale-in duration-500`}>
       <h3 className="text-lg font-semibold mb-4 font-inter text-primary dark:text-white">{title}</h3>
       <div className="flex items-center justify-center h-full">
         <div className="text-center">
@@ -607,7 +607,7 @@ const ChartPlaceholder = ({ title, height = "h-64" }: ChartPlaceholderProps) => 
 // Not Found Page Component
 const NotFound = () => {
   return (
-    <div className="flex flex-col items-center justify-center py-12">
+    <div className="flex flex-col items-center justify-center py-12 animate-in scale-in duration-500">
       <h1 className="text-4xl font-bold text-primary dark:text-white font-inter mb-4">404</h1>
       <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">The page you're looking for doesn't exist.</p>
       <Link href="/">
@@ -710,7 +710,7 @@ const Dashboard = () => {
   };
   
   return (
-    <div id="dashboard" className="animate-in fade-in duration-500">
+    <div id="dashboard" className="animate-in fade-in duration-700">
       {/* Dashboard Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
         <div>
@@ -856,7 +856,7 @@ const Habits = () => {
   };
 
   return (
-    <div className="animate-in fade-in duration-500">
+    <div className="animate-in slide-in-bottom duration-500">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-primary dark:text-white font-inter">Habits</h1>
         <Button className="bg-secondary dark:bg-blue-600 text-white hover:bg-blue-600" onClick={handleAddHabit}>
@@ -874,7 +874,7 @@ const Habits = () => {
 // Analytics Page Placeholder
 const Analytics = () => {
   return (
-    <div className="animate-in fade-in duration-500">
+    <div className="animate-in slide-in-left duration-500">
       <h1 className="text-2xl md:text-3xl font-bold text-primary dark:text-white font-inter mb-8">Analytics</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ChartPlaceholder title="Habit Completion Rate" />
@@ -899,7 +899,7 @@ const Settings = () => {
   };
 
   return (
-    <div className="animate-in fade-in duration-500">
+    <div className="animate-in slide-in-right duration-500">
       <h1 className="text-2xl md:text-3xl font-bold text-primary dark:text-white font-inter mb-8">Settings</h1>
       
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 p-6 mb-6">
