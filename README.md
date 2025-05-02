@@ -2,6 +2,15 @@
 
 ![Habitify](./generated-icon.png)
 
+video [https://youtu.be/y124odBz4BU]
+![Screenshot 2025-05-02 171212](https://github.com/user-attachments/assets/7c2c6c98-d49a-495b-9385-6ccc477ad267)
+![Screenshot 2025-05-02 171229](https://github.com/user-attachments/assets/389ff559-9675-43ca-b698-37c9583d7364)
+![Screenshot 2025-05-02 171329](https://github.com/user-attachments/assets/609b760f-9a14-455d-9c9b-7e479d946d08)
+![Screenshot 2025-05-02 171350](https://github.com/user-attachments/assets/6815df58-7c62-445a-9218-54945fea6f12)
+![Screenshot 2025-05-02 171421](https://github.com/user-attachments/assets/55e74740-dca6-40fa-b8c8-9f9d8365c403)
+
+
+
 ## Overview
 
 Habitify is a professional-grade personal habit and wellness tracking application that helps users monitor their daily activities, health metrics, and personal goals. Built with modern web technologies, it provides a polished SaaS-quality interface with interactive charts, streak tracking, and comprehensive analytics.
