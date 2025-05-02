@@ -29,7 +29,13 @@ Habitify is a professional-grade personal habit and wellness tracking applicatio
 - **Dark/Light Mode**: Toggle between dark and light themes with beautiful transition animations
 - **Responsive Design**: Seamless experience across desktop, tablet, and mobile devices
 - **Intuitive UI**: Clean, modern interface designed for ease of use
-- **Animations**: Smooth, subtle animations enhance the user experience
+
+### Animations & Visual Effects
+- **Theme Toggle Animation**: Fullscreen sun/moon takeover animation when switching between light and dark modes
+- **Page Transitions**: Each page has a unique entrance animation (fade, slide, scale)
+- **Interactive Elements**: Hover effects and micro-interactions throughout the interface
+- **Dynamic Content**: Staggered animations for statistics and charts to create a polished experience
+- **Progress Visualization**: Animated progress bars and indicators for goal tracking
 
 ## Technical Stack
 
